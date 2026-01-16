@@ -4,7 +4,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 import time
 
-# 페이지 설정
 st.set_page_config(
     page_title="올인원 인사이트 대시보드",
     page_icon="📊",
@@ -12,7 +11,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# 커스텀 CSS
 st.markdown("""
 <style>
     .main-header {
@@ -30,39 +28,11 @@ st.markdown("""
         color: #666;
         margin-bottom: 2rem;
     }
-    .context-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 1.5rem;
-        border-radius: 10px;
-        color: white;
-        margin-bottom: 1rem;
-    }
-    .summary-card {
-        background: #f8f9fa;
-        padding: 1.5rem;
-        border-radius: 10px;
-        border-left: 5px solid #667eea;
-        margin-bottom: 1rem;
-    }
-    .priority-item {
-        background: #fff;
-        padding: 1rem;
-        border-radius: 8px;
-        margin-bottom: 0.5rem;
-        border: 1px solid #e0e0e0;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-    .review-card-positive {
-        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-        padding: 1.5rem;
-        border-radius: 10px;
-        border-left: 5px solid #28a745;
-    }
-    .review-card-negative {
-        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
-        padding: 1.5rem;
-        border-radius: 10px;
-        border-left: 5px solid #dc3545;
+    .empty-state {
+        text-align: center;
+        color: #999;
+        font-size: 1.3rem;
+        padding: 5rem 2rem;
     }
     .stButton > button {
         width: 100%;
@@ -77,17 +47,9 @@ st.markdown("""
     .stButton > button:hover {
         background: linear-gradient(90deg, #5a6fd6 0%, #6a4190 100%);
     }
-    .metric-card {
-        background: white;
-        padding: 1rem;
-        border-radius: 10px;
-        text-align: center;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
 </style>
 """, unsafe_allow_html=True)
 
-# Mock 데이터 정의
 MOCK_DATA_SETS = {
     "tumbler": {
         "product_name": "프리미엄 스테인리스 텀블러",
@@ -181,14 +143,6 @@ MOCK_DATA_SETS = {
     }
 }
 
-def get_sentiment_color(sentiment):
-    colors = {
-        "positive": "#28a745",
-        "negative": "#dc3545",
-        "neutral": "#6c757d"
-    }
-    return colors.get(sentiment, "#6c757d")
-
 def get_urgency_color(urgency):
     colors = {
         "긴급": "#dc3545",
@@ -221,7 +175,6 @@ def simulate_loading():
     progress_bar.empty()
 
 def display_dashboard(data, user_context=""):
-    # 분석 개요 (Context Overview)
     st.markdown("### 📋 분석 개요")
     context_text = f"**분석 대상:** {data['product_name']}"
     if user_context:
@@ -232,14 +185,12 @@ def display_dashboard(data, user_context=""):
     
     st.markdown("---")
     
-    # AI 총평 요약
     st.markdown("### 🤖 AI 총평 요약")
     for i, summary in enumerate(data['summary'], 1):
         st.markdown(f"**{i}.** {summary}")
     
     st.markdown("---")
     
-    # 주제별 점유율 차트
     col1, col2 = st.columns([1, 1])
     
     with col1:
@@ -285,7 +236,6 @@ def display_dashboard(data, user_context=""):
     
     st.markdown("---")
     
-    # 대표 의견 하이라이트
     st.markdown("### 💬 대표 의견 하이라이트")
     
     positive_comments = [c for c in data['comments'] if c['sentiment'] == 'positive']
@@ -318,7 +268,6 @@ def display_dashboard(data, user_context=""):
             📁 주제: {worst['topic']} | 👍 공감: {worst['likes']:,}
             """)
     
-    # 전체 댓글 테이블
     st.markdown("---")
     st.markdown("### 📝 전체 분석 댓글")
     
@@ -341,126 +290,147 @@ def display_dashboard(data, user_context=""):
     )
 
 def main():
-    # 헤더
     st.markdown('<h1 class="main-header">📊 올인원 인사이트 대시보드</h1>', unsafe_allow_html=True)
     st.markdown('<p class="sub-header">비정형 텍스트 데이터를 AI가 분석하여 핵심 인사이트를 제공합니다</p>', unsafe_allow_html=True)
     
-    # 세션 상태 초기화
     if 'analysis_done' not in st.session_state:
         st.session_state.analysis_done = False
     if 'selected_data' not in st.session_state:
         st.session_state.selected_data = None
     if 'user_context' not in st.session_state:
         st.session_state.user_context = ""
+    if 'current_tab' not in st.session_state:
+        st.session_state.current_tab = "📥 데이터 입력"
     
-    # 입력 섹션
-    st.markdown("---")
-    st.markdown("## 📥 데이터 입력")
+    tab_options = ["📥 데이터 입력", "📈 분석 결과"]
     
-    # 데이터 소스 입력 탭
-    tab1, tab2, tab3, tab4 = st.tabs(["🔗 URL 입력", "📄 파일 업로드", "🖼️ 이미지 업로드", "📝 텍스트 붙여넣기"])
-    
-    with tab1:
-        url_input = st.text_input(
-            "분석할 페이지 URL을 입력하세요",
-            placeholder="https://example.com/product/reviews"
-        )
-        st.caption("예: 쇼핑몰 상품 리뷰 페이지, 유튜브 영상 URL, 뉴스 기사 URL 등")
-    
-    with tab2:
-        uploaded_file = st.file_uploader(
-            "PDF 또는 DOCX 파일을 업로드하세요",
-            type=['pdf', 'docx'],
-            help="리뷰나 댓글이 포함된 문서 파일"
-        )
-    
-    with tab3:
-        uploaded_image = st.file_uploader(
-            "이미지 파일을 업로드하세요",
-            type=['png', 'jpg', 'jpeg'],
-            help="스크린샷이나 캡처 이미지 (OCR로 텍스트 추출)"
-        )
-    
-    with tab4:
-        text_input = st.text_area(
-            "분석할 텍스트를 직접 붙여넣으세요",
-            height=150,
-            placeholder="리뷰나 댓글을 여기에 붙여넣으세요..."
-        )
-    
-    st.markdown("---")
-    
-    # 추가 설명 입력
-    st.markdown("## 📌 게시물 추가 설명 (선택 사항)")
-    user_context = st.text_area(
-        "게시물에 대한 추가 설명이나 배경 상황을 적어주세요",
-        placeholder="예: 이 제품은 최근 배송 지연 이슈가 있었습니다. / 이 영상은 컴백 후 첫 무대입니다.",
-        height=100
-    )
-    st.caption("💡 팁: 게시물의 내용을 요약하거나 유의해야 할 이슈를 적어주시면 분석 정확도가 올라갑니다.")
-    
-    st.markdown("---")
-    
-    # 더미 데이터 선택 및 분석 버튼
-    st.markdown("## 🚀 분석 실행")
-    
-    col1, col2 = st.columns([1, 2])
-    
-    with col1:
-        use_demo = st.checkbox("더미 데이터로 예시 보기", value=True)
-    
+    col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if use_demo:
-            demo_option = st.selectbox(
-                "데모 시나리오 선택",
-                options=["tumbler", "fashion", "youtube"],
-                format_func=lambda x: {
-                    "tumbler": "🥤 텀블러 쇼핑몰 리뷰",
-                    "fashion": "👗 여름 원피스 리뷰 (배송 이슈)",
-                    "youtube": "🎵 K-POP MV 댓글"
-                }[x]
-            )
-    
-    # 분석 시작 버튼
-    if st.button("🔍 분석 시작하기 (Generate Analysis)", type="primary", use_container_width=True):
-        # 입력 검증
-        has_input = url_input or uploaded_file or uploaded_image or text_input or use_demo
-        
-        if not has_input:
-            st.warning("분석할 데이터를 입력하거나 더미 데이터 옵션을 선택해주세요.")
-        else:
-            # 로딩 시뮬레이션
-            simulate_loading()
-            
-            # 분석 결과 저장
-            if use_demo:
-                st.session_state.selected_data = MOCK_DATA_SETS[demo_option]
-            else:
-                # 실제 입력이 있을 경우에도 데모 데이터 사용 (PoC)
-                st.session_state.selected_data = MOCK_DATA_SETS["tumbler"]
-            
-            st.session_state.user_context = user_context
-            st.session_state.analysis_done = True
-            st.rerun()
-    
-    # 분석 결과 표시
-    if st.session_state.analysis_done and st.session_state.selected_data:
-        st.markdown("---")
-        st.markdown("## 📈 분석 결과 대시보드")
-        st.success("✅ 분석이 완료되었습니다!")
-        
-        display_dashboard(
-            st.session_state.selected_data,
-            st.session_state.user_context
+        selected_tab = st.radio(
+            "메뉴 선택",
+            tab_options,
+            index=tab_options.index(st.session_state.current_tab),
+            horizontal=True,
+            label_visibility="collapsed"
         )
-        
-        # 리셋 버튼
+    
+    st.session_state.current_tab = selected_tab
+    
+    if selected_tab == "📥 데이터 입력":
         st.markdown("---")
-        if st.button("🔄 새로운 분석 시작하기"):
-            st.session_state.analysis_done = False
-            st.session_state.selected_data = None
-            st.session_state.user_context = ""
-            st.rerun()
+        st.markdown("## 데이터 소스 입력")
+        
+        input_tab1, input_tab2, input_tab3, input_tab4 = st.tabs(["🔗 URL 입력", "📄 파일 업로드", "🖼️ 이미지 업로드", "📝 텍스트 붙여넣기"])
+        
+        with input_tab1:
+            url_input = st.text_input(
+                "분석할 페이지 URL을 입력하세요",
+                placeholder="https://example.com/product/reviews",
+                key="url_input"
+            )
+            st.caption("예: 쇼핑몰 상품 리뷰 페이지, 유튜브 영상 URL, 뉴스 기사 URL 등")
+        
+        with input_tab2:
+            uploaded_file = st.file_uploader(
+                "PDF 또는 DOCX 파일을 업로드하세요",
+                type=['pdf', 'docx'],
+                help="리뷰나 댓글이 포함된 문서 파일",
+                key="file_upload"
+            )
+        
+        with input_tab3:
+            uploaded_image = st.file_uploader(
+                "이미지 파일을 업로드하세요",
+                type=['png', 'jpg', 'jpeg'],
+                help="스크린샷이나 캡처 이미지 (OCR로 텍스트 추출)",
+                key="image_upload"
+            )
+        
+        with input_tab4:
+            text_input = st.text_area(
+                "분석할 텍스트를 직접 붙여넣으세요",
+                height=150,
+                placeholder="리뷰나 댓글을 여기에 붙여넣으세요...",
+                key="text_input"
+            )
+        
+        st.markdown("---")
+        
+        st.markdown("## 📌 게시물 추가 설명 (선택 사항)")
+        user_context = st.text_area(
+            "게시물에 대한 추가 설명이나 배경 상황을 적어주세요",
+            placeholder="예: 이 제품은 최근 배송 지연 이슈가 있었습니다. / 이 영상은 컴백 후 첫 무대입니다.",
+            height=100,
+            key="user_context_input"
+        )
+        st.caption("💡 팁: 게시물의 내용을 요약하거나 유의해야 할 이슈를 적어주시면 분석 정확도가 올라갑니다.")
+        
+        st.markdown("---")
+        
+        st.markdown("## 🚀 분석 실행")
+        
+        col1, col2 = st.columns([1, 2])
+        
+        with col1:
+            use_demo = st.checkbox("더미 데이터로 예시 보기", value=True)
+        
+        with col2:
+            if use_demo:
+                demo_option = st.selectbox(
+                    "데모 시나리오 선택",
+                    options=["tumbler", "fashion", "youtube"],
+                    format_func=lambda x: {
+                        "tumbler": "🥤 텀블러 쇼핑몰 리뷰",
+                        "fashion": "👗 여름 원피스 리뷰 (배송 이슈)",
+                        "youtube": "🎵 K-POP MV 댓글"
+                    }[x]
+                )
+            else:
+                demo_option = "tumbler"
+        
+        if st.button("🔍 분석 시작하기 (Generate Analysis)", type="primary", use_container_width=True):
+            has_input = url_input or uploaded_file or uploaded_image or text_input or use_demo
+            
+            if not has_input:
+                st.warning("분석할 데이터를 입력하거나 더미 데이터 옵션을 선택해주세요.")
+            else:
+                simulate_loading()
+                
+                if use_demo:
+                    st.session_state.selected_data = MOCK_DATA_SETS[demo_option]
+                else:
+                    st.session_state.selected_data = MOCK_DATA_SETS["tumbler"]
+                
+                st.session_state.user_context = user_context
+                st.session_state.analysis_done = True
+                st.session_state.current_tab = "📈 분석 결과"
+                st.rerun()
+    
+    else:
+        st.markdown("---")
+        
+        if st.session_state.analysis_done and st.session_state.selected_data:
+            st.success("✅ 분석이 완료되었습니다!")
+            
+            display_dashboard(
+                st.session_state.selected_data,
+                st.session_state.user_context
+            )
+            
+            st.markdown("---")
+            if st.button("🔄 새로운 분석 시작하기", type="primary", use_container_width=True):
+                st.session_state.analysis_done = False
+                st.session_state.selected_data = None
+                st.session_state.user_context = ""
+                st.session_state.current_tab = "📥 데이터 입력"
+                st.rerun()
+        else:
+            st.markdown("""
+            <div class="empty-state">
+                <p>분석할 내용을 입력해주세요</p>
+                <p style="font-size: 0.9rem; margin-top: 1rem;">'데이터 입력' 탭에서 분석할 데이터를 입력하고 분석을 시작해주세요.</p>
+            </div>
+            """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
