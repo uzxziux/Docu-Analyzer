@@ -5,10 +5,33 @@ import time
 
 st.set_page_config(
     page_title="인사이트 대시보드",
-    page_icon="📊",
+    page_icon="◈",
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+ICONS = {
+    "dashboard": '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
+    "document": '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>',
+    "upload": '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
+    "link": '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
+    "lightbulb": '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>',
+    "target": '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
+    "summary": '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>',
+    "chart": '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>',
+    "alert": '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+    "comment": '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+    "check": '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+    "x": '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+    "search": '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
+    "refresh": '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>',
+    "thumbsup": '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>',
+    "list": '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>',
+    "cup": '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>',
+    "shirt": '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>',
+    "music": '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
+    "empty": '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>',
+}
 
 st.markdown("""
 <style>
@@ -33,6 +56,9 @@ st.markdown("""
         color: #1a1a1a;
         padding: 1rem 0;
         margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
     
     .sidebar-section {
@@ -64,11 +90,15 @@ st.markdown("""
         font-weight: 500;
         color: #1a1a1a;
         margin-bottom: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
     
     .source-card-meta {
         font-size: 0.75rem;
         color: #5f6368;
+        padding-left: 1.5rem;
     }
     
     .main-header {
@@ -100,8 +130,9 @@ st.markdown("""
     }
     
     .upload-icon {
-        font-size: 3rem;
         margin-bottom: 1rem;
+        display: flex;
+        justify-content: center;
     }
     
     .upload-text {
@@ -114,22 +145,6 @@ st.markdown("""
     .upload-subtext {
         font-size: 0.85rem;
         color: #5f6368;
-    }
-    
-    .action-button {
-        background: #1a73e8;
-        color: white;
-        border: none;
-        border-radius: 24px;
-        padding: 12px 24px;
-        font-size: 0.9rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: background 0.2s ease;
-    }
-    
-    .action-button:hover {
-        background: #1557b0;
     }
     
     .result-card {
@@ -151,31 +166,42 @@ st.markdown("""
         gap: 0.5rem;
     }
     
+    .icon-wrapper {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #5f6368;
+    }
+    
     .insight-chip {
         display: inline-block;
-        background: #e8f0fe;
-        color: #1a73e8;
+        background: #f1f3f4;
+        color: #3c4043;
         padding: 6px 12px;
         border-radius: 16px;
         font-size: 0.8rem;
         font-weight: 500;
         margin-right: 0.5rem;
         margin-bottom: 0.5rem;
+        border: 1px solid #e0e0e0;
     }
     
     .priority-high {
-        background: #fce8e6;
-        color: #c5221f;
+        background: #f1f3f4;
+        border-color: #3c4043;
+        color: #202124;
     }
     
     .priority-medium {
-        background: #fef7e0;
-        color: #e37400;
+        background: #f8f9fa;
+        border-color: #9aa0a6;
+        color: #5f6368;
     }
     
     .priority-low {
-        background: #e6f4ea;
-        color: #1e8e3e;
+        background: #fafafa;
+        border-color: #dadce0;
+        color: #80868b;
     }
     
     .summary-text {
@@ -185,16 +211,16 @@ st.markdown("""
     }
     
     .review-positive {
-        background: linear-gradient(135deg, #e6f4ea 0%, #ceead6 100%);
-        border-left: 4px solid #1e8e3e;
+        background: #fafafa;
+        border-left: 3px solid #3c4043;
         padding: 1rem 1.25rem;
         border-radius: 0 12px 12px 0;
         margin-bottom: 0.75rem;
     }
     
     .review-negative {
-        background: linear-gradient(135deg, #fce8e6 0%, #f8d7da 100%);
-        border-left: 4px solid #c5221f;
+        background: #fafafa;
+        border-left: 3px solid #9aa0a6;
         padding: 1rem 1.25rem;
         border-radius: 0 12px 12px 0;
         margin-bottom: 0.75rem;
@@ -210,6 +236,9 @@ st.markdown("""
     .review-meta {
         font-size: 0.75rem;
         color: #5f6368;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
     }
     
     .empty-state {
@@ -219,9 +248,9 @@ st.markdown("""
     }
     
     .empty-state-icon {
-        font-size: 4rem;
         margin-bottom: 1rem;
-        opacity: 0.5;
+        display: flex;
+        justify-content: center;
     }
     
     .empty-state-text {
@@ -263,19 +292,28 @@ st.markdown("""
     }
     
     .context-input-card {
-        background: #fff8e1;
-        border: 1px solid #ffecb3;
+        background: #f8f9fa;
+        border: 1px solid #e0e0e0;
         border-radius: 12px;
         padding: 1rem;
         margin: 1rem 0;
     }
     
-    .tab-container {
-        background: #ffffff;
-        border-radius: 12px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        border: 1px solid #e8eaed;
+    .context-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+        color: #3c4043;
+    }
+    
+    .section-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+        color: #3c4043;
+        margin-bottom: 0.5rem;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -405,14 +443,14 @@ def simulate_loading():
 
 def render_sidebar():
     with st.sidebar:
-        st.markdown('<div class="sidebar-title">📊 인사이트 대시보드</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="sidebar-title"><span class="icon-wrapper">{ICONS["dashboard"]}</span> 인사이트 대시보드</div>', unsafe_allow_html=True)
         
         st.markdown('<div class="sidebar-section">소스</div>', unsafe_allow_html=True)
         
         if st.session_state.analysis_done and st.session_state.selected_data:
             st.markdown(f'''
             <div class="source-card">
-                <div class="source-card-title">📄 {st.session_state.selected_data["product_name"]}</div>
+                <div class="source-card-title"><span class="icon-wrapper">{ICONS["document"]}</span> {st.session_state.selected_data["product_name"]}</div>
                 <div class="source-card-meta">분석 완료 · {len(st.session_state.selected_data["comments"])}개 댓글</div>
             </div>
             ''', unsafe_allow_html=True)
@@ -434,9 +472,9 @@ def render_sidebar():
                 "시나리오 선택",
                 options=["tumbler", "fashion", "youtube"],
                 format_func=lambda x: {
-                    "tumbler": "🥤 텀블러 리뷰",
-                    "fashion": "👗 패션 리뷰",
-                    "youtube": "🎵 유튜브 댓글"
+                    "tumbler": "텀블러 리뷰",
+                    "fashion": "패션 리뷰",
+                    "youtube": "유튜브 댓글"
                 }[x],
                 key="demo_select"
             )
@@ -452,9 +490,9 @@ def render_input_section():
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown('''
+        st.markdown(f'''
         <div class="upload-zone">
-            <div class="upload-icon">📁</div>
+            <div class="upload-icon">{ICONS["upload"]}</div>
             <div class="upload-text">파일 업로드</div>
             <div class="upload-subtext">PDF, DOCX, 이미지 파일을 드래그하거나 클릭하세요</div>
         </div>
@@ -468,9 +506,9 @@ def render_input_section():
         )
     
     with col2:
-        st.markdown('''
+        st.markdown(f'''
         <div class="upload-zone">
-            <div class="upload-icon">🔗</div>
+            <div class="upload-icon">{ICONS["link"]}</div>
             <div class="upload-text">URL 입력</div>
             <div class="upload-subtext">웹페이지 URL을 입력하세요</div>
         </div>
@@ -493,9 +531,9 @@ def render_input_section():
         key="text_input"
     )
     
-    st.markdown('''
+    st.markdown(f'''
     <div class="context-input-card">
-        <strong>💡 분석 맥락 추가 (선택)</strong>
+        <div class="context-header"><span class="icon-wrapper">{ICONS["lightbulb"]}</span> 분석 맥락 추가 (선택)</div>
         <p style="font-size: 0.85rem; color: #5f6368; margin-top: 0.5rem;">
             배경 정보나 특정 이슈를 입력하면 더 정확한 분석이 가능합니다.
         </p>
@@ -520,14 +558,14 @@ def render_results(data, user_context=""):
     
     st.markdown(f'''
     <div class="result-card">
-        <div class="result-card-header">🎯 분석 맥락</div>
+        <div class="result-card-header"><span class="icon-wrapper">{ICONS["target"]}</span> 분석 맥락</div>
         <p class="summary-text">{data["context"]}</p>
     </div>
     ''', unsafe_allow_html=True)
     
-    st.markdown('''
+    st.markdown(f'''
     <div class="result-card">
-        <div class="result-card-header">📝 AI 요약</div>
+        <div class="result-card-header"><span class="icon-wrapper">{ICONS["summary"]}</span> AI 요약</div>
     ''', unsafe_allow_html=True)
     
     for summary in data['summary']:
@@ -538,9 +576,9 @@ def render_results(data, user_context=""):
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown('''
+        st.markdown(f'''
         <div class="result-card">
-            <div class="result-card-header">📊 주제별 분포</div>
+            <div class="result-card-header"><span class="icon-wrapper">{ICONS["chart"]}</span> 주제별 분포</div>
         </div>
         ''', unsafe_allow_html=True)
         
@@ -553,7 +591,7 @@ def render_results(data, user_context=""):
             topics_df, 
             values='비율', 
             names='주제',
-            color_discrete_sequence=['#1a73e8', '#34a853', '#fbbc04', '#ea4335', '#9334e6'],
+            color_discrete_sequence=['#202124', '#5f6368', '#9aa0a6', '#bdc1c6', '#dadce0'],
             hole=0.4
         )
         fig.update_traces(textposition='outside', textinfo='percent+label')
@@ -567,9 +605,9 @@ def render_results(data, user_context=""):
         st.plotly_chart(fig, use_container_width=True)
     
     with col2:
-        st.markdown('''
+        st.markdown(f'''
         <div class="result-card">
-            <div class="result-card-header">🚨 개선 과제</div>
+            <div class="result-card-header"><span class="icon-wrapper">{ICONS["alert"]}</span> 개선 과제</div>
         </div>
         ''', unsafe_allow_html=True)
         
@@ -585,9 +623,9 @@ def render_results(data, user_context=""):
             </div>
             ''', unsafe_allow_html=True)
     
-    st.markdown('''
+    st.markdown(f'''
     <div class="result-card">
-        <div class="result-card-header">💬 대표 의견</div>
+        <div class="result-card-header"><span class="icon-wrapper">{ICONS["comment"]}</span> 대표 의견</div>
     </div>
     ''', unsafe_allow_html=True)
     
@@ -597,28 +635,28 @@ def render_results(data, user_context=""):
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown("**✅ 긍정 리뷰**")
+        st.markdown(f'<div class="section-label"><span class="icon-wrapper">{ICONS["check"]}</span> 긍정 리뷰</div>', unsafe_allow_html=True)
         if positive_comments:
             best = positive_comments[0]
             st.markdown(f'''
             <div class="review-positive">
                 <div class="review-text">"{best['text']}"</div>
-                <div class="review-meta">{best['topic']} · 👍 {best['likes']:,}</div>
+                <div class="review-meta">{best['topic']} · <span class="icon-wrapper">{ICONS["thumbsup"]}</span> {best['likes']:,}</div>
             </div>
             ''', unsafe_allow_html=True)
     
     with col2:
-        st.markdown("**⚠️ 개선 필요 리뷰**")
+        st.markdown(f'<div class="section-label"><span class="icon-wrapper">{ICONS["x"]}</span> 개선 필요 리뷰</div>', unsafe_allow_html=True)
         if negative_comments:
             worst = negative_comments[0]
             st.markdown(f'''
             <div class="review-negative">
                 <div class="review-text">"{worst['text']}"</div>
-                <div class="review-meta">{worst['topic']} · 👍 {worst['likes']:,}</div>
+                <div class="review-meta">{worst['topic']} · <span class="icon-wrapper">{ICONS["thumbsup"]}</span> {worst['likes']:,}</div>
             </div>
             ''', unsafe_allow_html=True)
     
-    with st.expander("📋 전체 댓글 보기"):
+    with st.expander("전체 댓글 보기"):
         comments_df = pd.DataFrame(data['comments'])
         comments_df['감정'] = comments_df['sentiment'].map({
             'positive': '긍정',
@@ -637,9 +675,9 @@ def render_results(data, user_context=""):
         )
 
 def render_empty_state():
-    st.markdown('''
+    st.markdown(f'''
     <div class="empty-state">
-        <div class="empty-state-icon">📊</div>
+        <div class="empty-state-icon">{ICONS["empty"]}</div>
         <div class="empty-state-text">분석 결과가 없습니다</div>
         <div class="empty-state-subtext">소스를 추가하고 분석을 시작해주세요</div>
     </div>
@@ -664,7 +702,7 @@ def main():
         
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
-            if st.button("🔍 분석 시작", type="primary", use_container_width=True):
+            if st.button("분석 시작", type="primary", use_container_width=True):
                 has_input = uploaded_file or url_input or text_input or use_demo
                 
                 if not has_input:
@@ -690,7 +728,7 @@ def main():
             
             col1, col2, col3 = st.columns([1, 2, 1])
             with col2:
-                if st.button("🔄 새로운 분석", type="primary", use_container_width=True):
+                if st.button("새로운 분석", type="primary", use_container_width=True):
                     st.session_state.analysis_done = False
                     st.session_state.selected_data = None
                     st.session_state.user_context = ""
